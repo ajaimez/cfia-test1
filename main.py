@@ -67,16 +67,30 @@ def OCRProces(image_path):
     # Extracting text from the image
     results = reader.readtext(image_path)
 
+    arr_str = [] 
+
     # Displaying the extracted results
     for detection in results:
         # if detection[1].startswith('Clave'): #or detection[1].startswith('506') :
         #     print(detection[1])
         #     break
-        if 'Clave' in detection[1] or ('506' in detection[1] and len(detection[1])>30):
-            print(detection[1])
-            clave = detection[1]
-            break
-    return clave    
+        if 'Clave' in detection[1]:
+            arr_str.append(detection[1])
+
+        if detection[1].startswith('506'):            
+            if(len(detection[1])>45):
+                arr_str.append(detection[1])
+                break
+        print(detection)
+
+
+
+    claves = ""
+
+    for item in arr_str:
+        claves += item + " "
+
+    return claves
  
 if __name__ == "__main__":
     app.run()
