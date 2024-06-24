@@ -1,8 +1,9 @@
-from flask import Flask, flash, request, redirect, url_for, render_template
+from flask import Flask, flash, request, redirect, url_for, render_template, json
 from markupsafe import Markup
 import urllib.request
 import os
 from werkzeug.utils import secure_filename
+from werkzeug.exceptions import HTTPException
 
 # import cv2  # OpenCV for image processing
 # import matplotlib.pyplot as plt  # Matplotlib for visualization
@@ -12,7 +13,13 @@ import easyocr  # EasyOCR for text extraction from images
 import PyPDF2
 
 import xml.etree.ElementTree as ET
- 
+
+import ssl
+ssl._create_default_https_context = ssl._create_stdlib_context
+
+import logging
+logging.basicConfig(filename='error.log',level=logging.DEBUG)
+
 app = Flask(__name__)
  
 UPLOAD_FOLDER = 'static/uploads/'
@@ -126,6 +133,7 @@ def display_image(filename):
     #print('display_image filename: ' + filename)
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
+
 def XMLProcess(xml_path):
     # document = parse(xml_path)
     # print(document.getElementsByTagName("//Clave"))
@@ -160,11 +168,12 @@ def PDFProcess(pdf_payh):
 
 
 def OCRProces(image_path):
+    print(image_path)
     # Reading the image
     # image = cv2.imread(image_path)
 
     # Initializing the EasyOCR reader with English language support and GPU disabled
-    reader = easyocr.Reader(['es'], gpu=False)
+    reader = easyocr.Reader(['la','es'], gpu=False, model_storage_directory = 'easyocr_model',user_network_directory=False)
 
     # Extracting text from the image
     results = reader.readtext(image_path)
