@@ -72,7 +72,7 @@ def upload_xml():
         flash('XML successfully uploaded and displayed below')
 
         flash(Markup('<b>DATO: ' + str(clave) + '</b>'))
-        return render_template('indexxml.html', filename=filename)
+        return render_template('indexpdf.html', filename=filename)
     else:
         flash('Allowed XML')
         return redirect(request.url)
@@ -123,7 +123,7 @@ def upload_image():
         flash('IMAGE successfully uploaded and displayed below')
 
         flash(Markup('<b>DATO: ' + clave + '</b>'))
-        return render_template('indexpdf.html', filename=filename)
+        return render_template('index.html', filename=filename)
     else:
         flash('Allowed image types are - png, jpg, jpeg')
         return redirect(request.url)
@@ -161,8 +161,9 @@ def PDFProcess(pdf_payh):
 
     for item in res:
         print(item)
+        item = getNumeric(item)
         if item.startswith("506") and len(item) > 45:
-            return item
+            return getNumeric(item)
 
     return "SIN DATO"
 
@@ -201,7 +202,15 @@ def OCRProces(image_path):
     for item in arr_str:
         claves += item + " "
 
-    return claves
- 
+    return getNumeric(claves)
+
+def getNumeric(data):
+    _data = ""
+    for i in data.split():
+        #print(i)
+        if i.isnumeric():
+            _data += str(i)
+    return _data
+
 if __name__ == "__main__":
-    app.run(host= '0.0.0.0', port=5000)
+    app.run(host= '0.0.0.0', port=5000,debug=True)

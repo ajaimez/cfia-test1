@@ -164,3 +164,4 @@ cython_debug/
 #.idea/
 
 static/uploads/
+easyocr_model/
