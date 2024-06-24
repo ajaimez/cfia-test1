@@ -1,4 +1,4 @@
-from flask import Flask, flash, request, redirect, url_for, render_template, json
+from flask import Flask, flash, request, redirect, url_for, render_template, json,jsonify
 from markupsafe import Markup
 import urllib.request
 import os
@@ -68,16 +68,15 @@ def upload_xml():
 
         clave = XMLProcess(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-        #print('upload_image filename: ' + filename)
-        flash('XML successfully uploaded and displayed below')
-
-        flash(Markup('<b>DATO: ' + str(clave) + '</b>'))
-        return render_template('indexpdf.html', filename=filename)
+        data = { 
+            "Data" : clave, 
+        }
+        return jsonify(data) 
     else:
-        flash('Allowed XML')
-        return redirect(request.url)
-    
-    return ""
+        data = { 
+            "Data" : "ERROR Allowed XML", 
+        }
+        return jsonify(data)    
 
 @app.route('/pdf', methods=['POST'])
 def upload_pdf():
@@ -94,18 +93,17 @@ def upload_pdf():
 
         clave = PDFProcess(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-        #print('upload_image filename: ' + filename)
-        flash('Image successfully uploaded and displayed below')
-
-        flash(Markup('<b>DATO: ' + str(clave) + '</b>'))
-        return render_template('indexpdf.html', filename=filename)
+        data = { 
+            "Data" : clave, 
+        }
+        return jsonify(data) 
     else:
-        flash('Allowed PDF')
-        return redirect(request.url)
-    
-    return ""
+        data = { 
+            "Data" : "ERROR Allowed PDF", 
+        }
+        return jsonify(data) 
 
-@app.route('/', methods=['POST'])
+@app.route('/image', methods=['POST'])
 def upload_image():
     if 'file' not in request.files:
         flash('No file part')
@@ -120,13 +118,15 @@ def upload_image():
 
         clave = OCRProces(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-        flash('IMAGE successfully uploaded and displayed below')
-
-        flash(Markup('<b>DATO: ' + clave + '</b>'))
-        return render_template('index.html', filename=filename)
+        data = { 
+            "Data" : clave, 
+        }
+        return jsonify(data)
     else:
-        flash('Allowed image types are - png, jpg, jpeg')
-        return redirect(request.url)
+        data = { 
+            "Data" : "ERROR Allowed image types are - png, jpg, jpeg", 
+        }
+        return jsonify(data)
  
 @app.route('/display/<filename>')
 def display_image(filename):
@@ -146,7 +146,7 @@ def XMLProcess(xml_path):
         if nodetext.startswith("506") and len(nodetext) > 45:    
             return nodetext
 
-    return "SIN DATOS"
+    return "NO DATA"
 
 def PDFProcess(pdf_payh):
     pdfFileObject = open(pdf_payh,'rb')
@@ -165,7 +165,7 @@ def PDFProcess(pdf_payh):
         if item.startswith("506") and len(item) > 45:
             return getNumeric(item)
 
-    return "SIN DATO"
+    return "NO DATA"
 
 
 def OCRProces(image_path):
@@ -195,14 +195,15 @@ def OCRProces(image_path):
                 break
         print(detection)
 
-
-
     claves = ""
 
     for item in arr_str:
         claves += item + " "
 
-    return getNumeric(claves)
+    if claves == "":
+        return "NO DATA"
+    else:
+        return getNumeric(claves)
 
 def getNumeric(data):
     _data = ""
