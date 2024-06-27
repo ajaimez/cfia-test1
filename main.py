@@ -94,6 +94,9 @@ def upload_xml():
 
         clave = XMLProcess(os.path.join(app.config["UPLOAD_FOLDER"], filename))
 
+        if clave == "NO DATA":
+            return returnJSON_ERROR("NO DATA")
+        
         return returnJSON_OK(clave,file.filename,"XML") 
     else:
         return returnJSON_ERROR("ERROR Allowed XML")    
@@ -111,6 +114,9 @@ def upload_pdf():
 
         clave = PDFProcess(os.path.join(app.config["UPLOAD_FOLDER"], filename))
 
+        if clave == "NO DATA":
+            return returnJSON_ERROR("NO DATA")
+        
         return returnJSON_OK(clave , file.filename , "PDF") 
     else:        
         return returnJSON_ERROR("ERROR Allowed PDF") 
@@ -128,6 +134,9 @@ def upload_image():
 
         clave = OCRProces(os.path.join(app.config["UPLOAD_FOLDER"], filename))
 
+        if clave == "NO DATA":
+            return returnJSON_ERROR("NO DATA")
+        
         return returnJSON_OK(clave , file.filename , filename.rsplit(".", 1)[1].lower())
     else:        
         return returnJSON_ERROR("ERROR Allowed image types are - png, jpg, jpeg")
@@ -211,7 +220,7 @@ def OCRProces(image_path):
 
 def getNumeric(data):
     _data = ""
-    for i in data.split():
+    for i in data:
         #print(i)
         if i.isnumeric():
             _data += str(i)
