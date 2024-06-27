@@ -38,9 +38,9 @@ def returnJSON_OK(claveNumerica,nombreArchivo,extension):
     _returnData = { 
                     "data" : {
                             "claveNumerica" : claveNumerica,
-                            "fechaConsulta" : datetime.datetime.now(timezone.utc),
-                            "nombreArchivo" : "",
-                            "extension" : ""
+                            "fechaConsulta" : datetime.datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+                            "nombreArchivo" : nombreArchivo,
+                            "extension" : extension
                         },
                      "mensaje" : {
                          "codigo" : 1,
@@ -94,7 +94,7 @@ def upload_xml():
 
         clave = XMLProcess(os.path.join(app.config["UPLOAD_FOLDER"], filename))
 
-        return returnJSON_OK(clave,"","") 
+        return returnJSON_OK(clave,file.filename,"XML") 
     else:
         return returnJSON_ERROR("ERROR Allowed XML")    
 
@@ -111,7 +111,7 @@ def upload_pdf():
 
         clave = PDFProcess(os.path.join(app.config["UPLOAD_FOLDER"], filename))
 
-        return returnJSON_OK(clave , "" , "") 
+        return returnJSON_OK(clave , file.filename , "PDF") 
     else:        
         return returnJSON_ERROR("ERROR Allowed PDF") 
 
@@ -128,7 +128,7 @@ def upload_image():
 
         clave = OCRProces(os.path.join(app.config["UPLOAD_FOLDER"], filename))
 
-        return returnJSON_OK(clave , "" , "")
+        return returnJSON_OK(clave , file.filename , filename.rsplit(".", 1)[1].lower())
     else:        
         return returnJSON_ERROR("ERROR Allowed image types are - png, jpg, jpeg")
  
